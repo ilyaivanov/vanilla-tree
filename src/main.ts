@@ -1,1 +1,3 @@
-document.body.append('Hello World')
+import { viewTree } from "./tree";
+
+document.body.appendChild(viewTree());
