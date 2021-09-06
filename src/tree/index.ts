@@ -1,41 +1,122 @@
 import { svg } from "../infra";
 import { colors, spacings } from "./constants";
+import { ItemActions, listenToKeyboardEvents } from "./eventsController";
 
 export const viewTree = (root: Item): SVGSVGElement => {
   const height = window.innerHeight;
   const width = window.innerWidth;
-  return svg.svg(
+
+  const map = new WeakMap<Item, ItemActions>();
+  const result = svg.svg(
     { viewBox: `0 0 ${width} ${height}`, width, height },
-    viewItem(root)
+    viewItem(root, 0, (item, actions) => map.set(item, actions))
   );
+
+  listenToKeyboardEvents(map, root);
+  return result;
 };
 
-const viewItem = (item: Item): SVGElement =>
-  svg.g({ transform: getItemTransform(item) }, [
-    svg.path({
-      d: svgPath(item),
-      "stroke-width": strokeWidth,
-      stroke: colors.lines,
-      fill: "none",
-    }),
-    svg.circle({ r: spacings.circleRadius, fill: colors.circle }),
-    svg.text(item.title, {
-      dy: "0.32em",
-      x: spacings.circleRadius + spacings.distanceBetweenTextAndCircle,
-      fill: colors.textRegular,
-    }),
+type OnView = (item: Item, action: ItemActions) => void;
 
-    svg.g({}, item.children.map(viewItem)),
+const viewItem = (
+  item: Item,
+  focusLevel: number,
+  onView: OnView
+): SVGElement => {
+  const path = svg.path({
+    d: svgPath(item),
+    "stroke-width": strokeWidth,
+    stroke: colors.lines,
+    fill: "none",
+  });
+
+  const text = svg.text(item.title, {
+    dy: "0.32em",
+    "font-size": focusLevel == 0 || focusLevel == 1 ? 18 : undefined,
+    "font-weight": focusLevel == 0 ? 600 : focusLevel == 1 ? 500 : undefined,
+    x: spacings.circleRadius + spacings.distanceBetweenTextAndCircle,
+    fill: colors.textRegular,
+  });
+
+  const circle = svg.circle({ r: spacings.circleRadius, fill: colors.circle });
+
+  const actions: ItemActions = {
+    select: () => {
+      text.setAttribute("fill", colors.selectedItemFontColor);
+      circle.setAttribute("fill", colors.selectedItemFontColor);
+    },
+    unselect: () => {
+      text.setAttribute("fill", colors.textRegular);
+      circle.setAttribute("fill", colors.circle);
+    },
+    close: () => {
+      gsap.to(children, {
+        opacity: 0,
+        onComplete: () => {
+          children?.remove();
+          children = undefined;
+        },
+      });
+    },
+
+    open: () => {
+      children =
+        item.children.length > 0
+          ? viewChildren(item, focusLevel, onView)
+          : undefined;
+      if (children) {
+        itemContainer.appendChild(children);
+        gsap.fromTo(children, { opacity: 0 }, { opacity: 1 });
+      }
+    },
+
+    updatePositionInTree: () => {
+      gsap.to(itemContainer, {
+        attr: { transform: getItemTransformInUnits(item) },
+      });
+      gsap.to(path, { attr: { d: svgPath(item) } });
+    },
+  };
+
+  let children =
+    item.children.length > 0
+      ? viewChildren(item, focusLevel, onView)
+      : undefined;
+
+  onView(item, actions);
+  const itemContainer = svg.g({ transform: getItemTransformInUnits(item) }, [
+    path,
+    circle,
+    text,
+    children,
   ]);
+  return itemContainer;
+};
 
-const getItemTransform = (item: Item): string => {
+const viewChildren = (item: Item, currentLevel: number, onView: OnView) =>
+  svg.g(
+    {},
+    item.children.map((item) => viewItem(item, currentLevel + 1, onView))
+  );
+
+const getItemTransformInPixels = (item: Item): string => {
+  const [x, y] = getItemTransform(item);
+  return `translate(${x}px,${y}px)`;
+};
+
+const getItemTransformInUnits = (item: Item): string => {
+  const [x, y] = getItemTransform(item);
+  return `translate(${x},${y})`;
+};
+
+const getItemTransform = (item: Item): [number, number] => {
   //TODO: check if in focus
-  if (!item.parent) return `translate(${spacings.rootGap},${spacings.rootGap})`;
+  if (!item.parent) return [spacings.rootGap, spacings.rootGap];
   else {
     const rowsFromParent = item.globalIndex - item.parent.globalIndex;
     const x = spacings.horizontalDistanceBetweenItems;
     const y = rowsFromParent * spacings.verticalDistanceBetweenItemCenters;
-    return `translate(${x},${y})`;
+    return [x, y];
   }
 };
 
