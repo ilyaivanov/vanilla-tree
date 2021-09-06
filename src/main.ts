@@ -1,18 +1,14 @@
 import { viewTree } from "./tree";
+import { createItem, createRoot, randomItems } from "./itemsTree";
 
-//DATA
-
-const randomName = (index: number) => "Item " + index;
-
-const randomItems = (count: number) =>
-  Array.from(new Array(count)).map((_, i) => ({
-    title: randomName(i + 1),
-    children: [],
-  }));
-
-const root: Item = {
-  title: "Home",
-  children: randomItems(20),
-};
+const root: Item = createRoot("Home", [
+  createItem("Music", randomItems(10)),
+  createItem("Software Development", [
+    createItem("Front-End", randomItems(3)),
+    createItem("Back-End", randomItems(2)),
+  ]),
+  createItem("People", randomItems(12)),
+  createItem("Channels", randomItems(5)),
+]);
 
 document.body.appendChild(viewTree(root));

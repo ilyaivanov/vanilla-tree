@@ -25,6 +25,7 @@ type TextProps = {
   dy?: string;
   fill?: string;
   "font-size"?: number;
+  "font-weight"?: number;
   contentEditable?: boolean;
 };
 export const text = (text: string, props: TextProps) => {
@@ -37,6 +38,7 @@ export const text = (text: string, props: TextProps) => {
 type PathProps = {
   d: string;
   stroke?: string;
+  "stroke-width"?: number;
   fill?: string;
 };
 export const path = (props: PathProps) => assignProps(svgElem("path"), props);
