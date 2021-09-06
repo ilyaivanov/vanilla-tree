@@ -67,8 +67,8 @@ export const g = (props: GProps, children?: ChildSvgElements) => {
 
 type SVGProps = {
   viewBox: string;
-  width: string;
-  height: string;
+  width: number;
+  height: number;
 };
 export const svg = (props: SVGProps, children?: ChildSvgElements) => {
   const result = assignProps(svgElem("svg"), props || {});
