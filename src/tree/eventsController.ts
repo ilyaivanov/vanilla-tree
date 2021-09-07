@@ -1,5 +1,5 @@
 import * as traversal from "../itemsTree/traversal";
-import { ItemView } from "./ItemView";
+import { ItemView } from "./itemView";
 
 export const listenToKeyboardEvents = (
   map: WeakMap<Item, ItemView>,
@@ -15,11 +15,7 @@ export const listenToKeyboardEvents = (
   };
 
   const updateIndexes = (selectedItem: Item) => {
-    let currentGlobalIndex = selectedItem.globalIndex + 1;
-
     traversal.forEachItemBelow(selectedItem, (item) => {
-      item.globalIndex = currentGlobalIndex++;
-      console.log(item.title, item.isOpen);
       map.get(item)?.updatePositionInTree();
     });
   };
@@ -36,8 +32,8 @@ export const listenToKeyboardEvents = (
     if (e.code === "ArrowLeft") {
       if (selectedItem.isOpen) {
         selectedItem.isOpen = false;
-        map.get(selectedItem)?.close();
         updateIndexes(selectedItem);
+        map.get(selectedItem)?.close();
       } else if (selectedItem.parent) {
         selectItem(selectedItem.parent);
       }

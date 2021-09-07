@@ -1,20 +1,43 @@
 export const forEachChild = (root: Item, action: (item: Item) => void) => {
   const forEachItemAndChildren = (item: Item) => {
-    action(item);
     if (item.isOpen) item.children.forEach(forEachItemAndChildren);
+    action(item);
   };
   root.children.forEach(forEachItemAndChildren);
 };
 
-export const forEachItemBelow = (item: Item, action: (item: Item) => void) => {
+export const forEachItemBelow = (
+  item: Item,
+  action: (item: Item, prevItem?: Item) => void
+) => {
   let parent: Item | undefined = item.parent;
   let currentItem: Item = item;
-  if (item.isOpen) forEachChild(item, action);
   while (parent) {
-    getArrayElementsAfter(parent.children!, currentItem).forEach(action);
+    getArrayElementsAfter(parent.children!, currentItem).forEach(
+      (item, index, items) => action(item, items[index - 1])
+    );
     currentItem = parent;
     parent = parent.parent;
   }
+};
+
+export const getItemOffsetFromParent = (item: Item): number => {
+  if (!item.parent) return 0;
+  const index = item.parent.children.indexOf(item);
+  if (index === 0) return 1;
+  else {
+    const res = item.parent.children
+      .slice(0, index)
+      .map(getTotalChildrenCount)
+      .reduce((a, b) => a + b, index + 1);
+    return res;
+  }
+};
+
+const getTotalChildrenCount = (item: Item) => {
+  let count = 0;
+  if (item.isOpen) forEachChild(item, () => count++);
+  return count;
 };
 
 //this goes down into children
@@ -50,7 +73,6 @@ export const getFollowingItem = (item: Item): Item | undefined => {
     }
   }
 };
-// //this always returns following item without going down to children
 export const getPreviousItem = (item: Item): Item | undefined => {
   const parent = item.parent;
   if (parent) {

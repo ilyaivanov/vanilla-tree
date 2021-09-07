@@ -1,5 +1,6 @@
 import { colors, spacings } from "./constants";
 import { svg } from "../infra";
+import { getItemOffsetFromParent } from "../itemsTree/traversal";
 
 type OnView = (item: Item, action: ItemView) => void;
 
@@ -10,6 +11,7 @@ export class ItemView {
   circle: SVGCircleElement;
   text: SVGTextElement;
   children?: SVGGElement;
+
   constructor(
     private item: Item,
     private focusLevel: number,
@@ -59,20 +61,26 @@ export class ItemView {
 
   updatePositionInTree = () => {
     gsap.to(this.el, {
-      attr: { transform: getItemTransform(this.item) },
+      attr: {
+        transform: getItemTransform(this.item),
+      },
     });
-    gsap.to(this.path, { attr: { d: svgPath(this.item) } });
+    gsap.to(this.path, {
+      attr: { d: svgPath(this.item) },
+    });
   };
 
-  private viewChildren = () => {
+  private viewChildren = (): SVGGElement | undefined => {
     const { item, focusLevel, onView } = this;
-    return item.isOpen && item.children.length > 0
-      ? viewElements.children(
-          item.children.map(
-            (item) => new ItemView(item, focusLevel + 1, onView).el
-          )
+    if (item.isOpen && item.children.length > 0) {
+      return viewElements.children(
+        item.children.map(
+          (item) => new ItemView(item, focusLevel + 1, onView).el
         )
-      : undefined;
+      );
+    } else {
+      return undefined;
+    }
   };
 }
 
@@ -105,9 +113,10 @@ const getItemTransform = (item: Item): string => {
   if (!item.parent) {
     position = { x: spacings.rootGap, y: spacings.rootGap };
   } else {
-    const rowsFromParent = item.globalIndex - item.parent.globalIndex;
     const x = spacings.horizontalDistanceBetweenItems;
-    const y = rowsFromParent * spacings.verticalDistanceBetweenItemCenters;
+    const y =
+      getItemOffsetFromParent(item) *
+      spacings.verticalDistanceBetweenItemCenters;
     position = { x, y };
   }
   return `translate(${position.x},${position.y})`;
@@ -122,7 +131,7 @@ const svgPath = (item: Item): string =>
     ? `M0,${strokeOffset}H-${
         spacings.horizontalDistanceBetweenItems + strokeOffset
       }V-${
-        (item.globalIndex! - item.parent.globalIndex!) *
+        getItemOffsetFromParent(item) *
           spacings.verticalDistanceBetweenItemCenters -
         spacings.circleRadius
       }`

@@ -1,6 +1,6 @@
 import { svg } from "../infra";
 import { listenToKeyboardEvents } from "./eventsController";
-import { ItemView } from "./ItemView";
+import { ItemView } from "./itemView";
 
 //idea - move all SVG and contansts to view, at controller just coordinate
 //do we need an item controller? Not for now since eventsController handling input
