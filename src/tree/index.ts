@@ -45,10 +45,12 @@ const viewItem = (
       text.setAttribute("fill", colors.selectedItemFontColor);
       circle.setAttribute("fill", colors.selectedItemFontColor);
     },
+
     unselect: () => {
       text.setAttribute("fill", colors.textRegular);
       circle.setAttribute("fill", colors.circle);
     },
+
     close: () => {
       gsap.to(children, {
         opacity: 0,
@@ -60,10 +62,7 @@ const viewItem = (
     },
 
     open: () => {
-      children =
-        item.children.length > 0
-          ? viewChildren(item, focusLevel, onView)
-          : undefined;
+      children = viewChildren(item, focusLevel, onView);
       if (children) {
         itemContainer.appendChild(children);
         gsap.fromTo(children, { opacity: 0 }, { opacity: 1 });
@@ -78,10 +77,7 @@ const viewItem = (
     },
   };
 
-  let children =
-    item.children.length > 0
-      ? viewChildren(item, focusLevel, onView)
-      : undefined;
+  let children = viewChildren(item, focusLevel, onView);
 
   onView(item, actions);
   const itemContainer = svg.g({ transform: getItemTransformInUnits(item) }, [
@@ -94,29 +90,26 @@ const viewItem = (
 };
 
 const viewChildren = (item: Item, currentLevel: number, onView: OnView) =>
-  svg.g(
-    {},
-    item.children.map((item) => viewItem(item, currentLevel + 1, onView))
-  );
-
-const getItemTransformInPixels = (item: Item): string => {
-  const [x, y] = getItemTransform(item);
-  return `translate(${x}px,${y}px)`;
-};
+  item.isOpen && item.children.length > 0
+    ? svg.g(
+        {},
+        item.children.map((item) => viewItem(item, currentLevel + 1, onView))
+      )
+    : undefined;
 
 const getItemTransformInUnits = (item: Item): string => {
-  const [x, y] = getItemTransform(item);
+  const { x, y } = getItemTransform(item);
   return `translate(${x},${y})`;
 };
 
-const getItemTransform = (item: Item): [number, number] => {
+const getItemTransform = (item: Item): Vector => {
   //TODO: check if in focus
-  if (!item.parent) return [spacings.rootGap, spacings.rootGap];
+  if (!item.parent) return { x: spacings.rootGap, y: spacings.rootGap };
   else {
     const rowsFromParent = item.globalIndex - item.parent.globalIndex;
     const x = spacings.horizontalDistanceBetweenItems;
     const y = rowsFromParent * spacings.verticalDistanceBetweenItemCenters;
-    return [x, y];
+    return { x, y };
   }
 };
 
