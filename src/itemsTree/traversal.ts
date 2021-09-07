@@ -1,14 +1,15 @@
 export const forEachChild = (root: Item, action: (item: Item) => void) => {
   const forEachItemAndChildren = (item: Item) => {
     action(item);
-    item.children.forEach(forEachItemAndChildren);
+    if (item.isOpen) item.children.forEach(forEachItemAndChildren);
   };
   root.children.forEach(forEachItemAndChildren);
 };
 
-export const forEachItemAfter = (item: Item, action: (item: Item) => void) => {
+export const forEachItemBelow = (item: Item, action: (item: Item) => void) => {
   let parent: Item | undefined = item.parent;
   let currentItem: Item = item;
+  if (item.isOpen) forEachChild(item, action);
   while (parent) {
     getArrayElementsAfter(parent.children!, currentItem).forEach(action);
     currentItem = parent;
