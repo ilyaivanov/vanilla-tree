@@ -19,6 +19,11 @@ type CircleProps = {
 export const circle = (props: CircleProps) =>
   assignProps(svgElem("circle"), props);
 
+export const updateCircle = (
+  circle: SVGCircleElement,
+  props: Partial<CircleProps>
+) => assignProps(circle, props);
+
 type TextProps = {
   x?: number;
   y?: number;
@@ -34,6 +39,9 @@ export const text = (text: string, props: TextProps) => {
   result.textContent = text;
   return result;
 };
+
+export const updateText = (textElem: SVGTextElement, props: TextProps) =>
+  assignProps(textElem, props);
 
 type PathProps = {
   d: string;

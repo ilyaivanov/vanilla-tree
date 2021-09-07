@@ -1,12 +1,9 @@
-import { forEachChild } from "./traversal";
-
 const randomName = (index: number) => "Item " + index;
 
 export const createItem = (title: string, children: Item[] = []): Item => {
   const item: Item = {
     title,
     children,
-    globalIndex: 0,
     isOpen: children.length > 0,
   };
 
@@ -17,9 +14,6 @@ export const createItem = (title: string, children: Item[] = []): Item => {
 export const createRoot = (title: string, children: Item[]): Item => {
   const result = createItem(title, children);
 
-  result.globalIndex = 0;
-  let index = 1;
-  forEachChild(result, (item) => (item.globalIndex = index++));
   return result;
 };
 
