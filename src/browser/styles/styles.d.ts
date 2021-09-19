@@ -17,7 +17,7 @@ type Styles = Partial<{
   margin: number | string;
   marginRight: number | "-100%" | "auto";
   marginLeft: number | "auto" | string;
-  marginTop: number;
+  marginTop: number | string;
   marginBottom: number;
   padding: number | string;
   paddingRight: number | string;

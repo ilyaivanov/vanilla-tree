@@ -1,4 +1,5 @@
 import { removeItem } from "./core";
+import { createItem } from "./create";
 import { Events } from "./events";
 import { getItemBelow, getItemAbove, getFirstChild, isRoot } from "./traversal";
 
@@ -32,6 +33,19 @@ export class Store {
     this.events.trigger("removed", itemSelected);
   };
 
+  createItemAfterSelection = () => {
+    const itemSelected = this.selectedItem;
+    const parent = itemSelected.parent;
+    if (parent) {
+      const index = parent.children.indexOf(itemSelected);
+      const newItem = createItem("Hello World");
+      newItem.parent = parent;
+      parent.children.splice(index + 1, 0, newItem);
+      this.events.trigger("added", newItem);
+      this.changeSelection(newItem);
+    }
+  };
+
   openItem(item: Item) {
     item.isOpen = true;
     this.events.trigger("open", item);
@@ -63,5 +77,6 @@ type ItemEvents = {
   close: Action<Item>;
   open: Action<Item>;
   removed: Action<Item>;
+  added: Action<Item>;
   selectionChanged: (prev: Item, next: Item) => void;
 };

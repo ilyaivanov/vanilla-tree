@@ -39,6 +39,17 @@ export class ItemView {
     this.el.remove();
   }
 
+  insertItemAt(item: Item, index: number) {
+    if (this.children) {
+      const el = new ItemView(item, this.onView, this.level + 1).el;
+      if (index === 0) {
+        this.children.appendChild(el);
+      } else {
+        this.children.children[index - 1].insertAdjacentElement("afterend", el);
+      }
+    }
+  }
+
   open() {
     this.children = this.viewChildren();
     if (this.children) dom.appendChild(this.el, this.children);
@@ -90,19 +101,22 @@ style.class("item-children-highlighted", {
 });
 
 style.class("item-circle", {
+  minWidth: spacings.circleSize,
   width: spacings.circleSize,
   height: spacings.circleSize,
   borderRadius: spacings.circleSize / 2,
   backgroundColor: colors.circle,
   display: "inline-block",
   marginRight: spacings.distanceBetweenTextAndCircle,
+
+  //picked by hand to center circle across text. probably better to fix this
+  marginTop: "0.35em",
 });
 
 style.class("item-row", {
   paddingTop: spacings.itemPadding,
   paddingBottom: spacings.itemPadding,
   display: "flex",
-  alignItems: "center",
 
   //this margin\padding is used to extends selection background color
   marginLeft: -spacings.xStep / 2,
