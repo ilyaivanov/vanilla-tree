@@ -20,6 +20,8 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
   };
 
   store.onSelectionChanged(selectItem);
+  store.onItemClosed((item) => map.get(item)?.close());
+  store.onItemOpened((item) => map.get(item)?.open());
 
   selectItem(undefined, store.selectedItem);
 
@@ -32,23 +34,15 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
       e.preventDefault();
       store.moveSelectionUp();
     }
-    // if (e.code === "ArrowLeft") {
-    //   e.preventDefault();
-    //   if (selectedItem.isOpen) {
-    //     selectedItem.isOpen = false;
-    //     map.get(selectedItem)?.close();
-    //   } else if (selectedItem.parent) {
-    //     selectItem(selectedItem.parent);
-    //   }
-    // }
-    // if (e.code === "ArrowRight") {
-    //   e.preventDefault();
-    //   if (!selectedItem.isOpen) {
-    //     selectedItem.isOpen = true;
-    //     map.get(selectedItem)?.open();
-    //   } else if (selectedItem.children.length > 0) {
-    //     selectItem(selectedItem.children[0]);
-    //   }
-    // }
+    if (e.code === "ArrowLeft") {
+      e.preventDefault();
+      if (store.selectedItem.isOpen) store.closeItem(store.selectedItem);
+      else store.moveSelectionToParent();
+    }
+    if (e.code === "ArrowRight") {
+      e.preventDefault();
+      if (!store.selectedItem.isOpen) store.openItem(store.selectedItem);
+      else store.moveSelectionToFirstChild();
+    }
   });
 };

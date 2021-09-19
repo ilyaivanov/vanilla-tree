@@ -1,4 +1,5 @@
-import { getItemBelow, getItemAbove, isRoot } from "./traversal";
+import { Events } from "./core";
+import { getItemBelow, getItemAbove, getFirstChild, isRoot } from "./traversal";
 
 export class Store {
   public selectedItem: Item;
@@ -6,47 +7,57 @@ export class Store {
     this.selectedItem = root.children[0];
   }
 
-  moveSelectionDown() {
-    const itemBelow = getItemBelow(this.selectedItem);
-    if (itemBelow) this.changeSelection(itemBelow);
+  moveSelectionDown = () =>
+    this.changeSelection(getItemBelow(this.selectedItem));
+
+  moveSelectionUp = () => this.changeSelection(getItemAbove(this.selectedItem));
+
+  moveSelectionToParent = () => this.changeSelection(this.selectedItem.parent);
+
+  moveSelectionToFirstChild = () =>
+    this.changeSelection(getFirstChild(this.selectedItem));
+
+  selectFirstChild = () => this.changeSelection(this.selectedItem.parent);
+
+  selectItem = (item: Item) => this.changeSelection(item);
+
+  openItem(item: Item) {
+    item.isOpen = true;
+    this.events.trigger("open", item);
   }
 
-  moveSelectionUp() {
-    const itemAbove = getItemAbove(this.selectedItem);
-    if (itemAbove && !isRoot(itemAbove)) this.changeSelection(itemAbove);
+  closeItem(item: Item) {
+    item.isOpen = false;
+    this.events.trigger("close", item);
   }
 
-  selectItem(item: Item) {
-    this.changeSelection(item);
-  }
+  events = new Events<ItemEvents>();
+  onItemClosed = (cb: Action<Item>) => this.events.on("close", cb);
 
-  openItem(item: Item) {}
+  onItemOpened = (cb: Action<Item>) => this.events.on("open", cb);
 
-  closeItem(item: Item) {}
-
-  //EVENTS
-  onSelectionChangedCbs: Action2<Item, Item>[] = [];
-  onSelectionChanged(cb: Action2<Item, Item>) {
-    this.onSelectionChangedCbs.push(cb);
-  }
+  onSelectionChanged = (cb: Action2<Item, Item>) =>
+    this.events.on("selectionChanged", cb);
 
   offSelectionChanged(cb: Action2<Item, Item>) {
-    this.onSelectionChangedCbs = this.onSelectionChangedCbs.filter(
-      (c) => c != cb
-    );
+    this.events.off("selectionChanged", cb);
   }
 
-  private changeSelection(newItemSelected: Item) {
-    const previouslySelectedItem = this.selectedItem;
-    this.selectedItem = newItemSelected;
-    this.onSelectionChangedCbs.forEach((cb) =>
-      cb(previouslySelectedItem, this.selectedItem)
-    );
+  private changeSelection(newItemSelected: Item | undefined) {
+    if (newItemSelected && !isRoot(newItemSelected)) {
+      const previouslySelectedItem = this.selectedItem;
+      this.selectedItem = newItemSelected;
+      this.events.trigger(
+        "selectionChanged",
+        previouslySelectedItem,
+        this.selectedItem
+      );
+    }
   }
 }
 
-class Events {
-  on(event: string, cb: any) {}
-  off(event: string, cb: any) {}
-  trigger(event: string, ...args: any[]) {}
-}
+type ItemEvents = {
+  close: (prev: Item) => void;
+  open: (prev: Item) => void;
+  selectionChanged: (prev: Item, next: Item) => void;
+};

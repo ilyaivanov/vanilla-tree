@@ -1,5 +1,5 @@
 export const getItemBelow = (item: Item): Item | undefined => {
-  if (item.isOpen && item.children) return item.children![0];
+  if (isChildrenVisible(item)) return item.children![0];
 
   const followingItem = getFollowingItem(item);
   if (followingItem) return followingItem;
@@ -18,6 +18,8 @@ export const getItemAbove = (item: Item): Item | undefined => {
   else if (previous) return previous;
   else if (item.parent) return item.parent;
 };
+
+export const getFirstChild = (item: Item): Item | undefined => item.children[0];
 
 //this always returns following item without going down to children
 const getFollowingItem = (item: Item): Item | undefined => {
@@ -42,7 +44,7 @@ const getPreviousItem = (item: Item): Item | undefined => {
 };
 
 const getLastNestedItem = (item: Item): Item => {
-  if (item.isOpen && item.children) {
+  if (isChildrenVisible(item)) {
     const { children } = item;
     return getLastNestedItem(children[children.length - 1]);
   }
@@ -54,3 +56,6 @@ const isLast = (item: Item): boolean => !getFollowingItem(item);
 export const isRoot = (item: Item): boolean => {
   return !item.parent;
 };
+
+export const isChildrenVisible = (item: Item): boolean =>
+  !!item.isOpen && item.children.length > 0;

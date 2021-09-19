@@ -1,7 +1,7 @@
 import { colors, fontSizes, spacings } from "../designSystem";
 import { dom } from "../browser";
 import { style } from "../browser/styles/style";
-import { isRoot } from "../domain/traversal";
+import { isRoot, isChildrenVisible } from "../domain/traversal";
 
 export class ItemView {
   el: HTMLElement;
@@ -53,7 +53,7 @@ export class ItemView {
     dom.removeClass(this.children, "item-children-highlighted");
 
   private viewChildren() {
-    if (this.item.isOpen && this.item.children.length)
+    if (isChildrenVisible(this.item))
       return dom.div(
         { classMap: { "item-children": !isRoot(this.item) } },
         this.item.children.map(
