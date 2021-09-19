@@ -1,7 +1,7 @@
 import { viewTree } from "./tree";
 import { createItem, createRoot, randomItems } from "./itemsTree";
-import { css, style } from "./infra/styles/style";
-import { dom } from "./infra";
+import { css, style } from "./browser/styles/style";
+import { dom } from "./browser";
 import { colors, fontSizes, spacings } from "./designSystem";
 
 const root: Item = createRoot("Home", [

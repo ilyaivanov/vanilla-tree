@@ -1,6 +1,6 @@
 import { fontSizes, spacings } from "../designSystem";
-import { dom } from "../infra";
-import { style } from "../infra/styles/style";
+import { dom } from "../browser";
+import { style } from "../browser/styles/style";
 import { isRoot } from "../itemsTree/traversal";
 import { ItemViewEvents, listenToKeyboardEvents } from "./eventsController";
 
