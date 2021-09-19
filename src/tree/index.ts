@@ -23,6 +23,8 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
   store.on("close", (item) => map.get(item)?.close());
   store.on("open", (item) => map.get(item)?.open());
   store.on("removed", (item) => map.get(item)?.remove());
+  store.on("startRenaming", (item) => map.get(item)?.startRenaming());
+
   store.on("added", (item) => {
     const parent = item.parent;
     if (parent) {
@@ -34,6 +36,10 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
   selectItem(undefined, store.selectedItem);
 
   document.addEventListener("keydown", (e) => {
+    if (e.code === "KeyE") {
+      e.preventDefault();
+      store.startRenaming();
+    }
     if (e.code === "Backspace" && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
       store.removeSelected();

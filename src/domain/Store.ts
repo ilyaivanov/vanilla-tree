@@ -46,6 +46,10 @@ export class Store {
     }
   };
 
+  startRenaming = () => {
+    this.events.trigger("startRenaming", this.selectedItem);
+  };
+
   openItem(item: Item) {
     item.isOpen = true;
     this.events.trigger("open", item);
@@ -78,5 +82,6 @@ type ItemEvents = {
   open: Action<Item>;
   removed: Action<Item>;
   added: Action<Item>;
+  startRenaming: Action<Item>;
   selectionChanged: (prev: Item, next: Item) => void;
 };

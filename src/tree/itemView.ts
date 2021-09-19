@@ -6,6 +6,7 @@ import { isRoot, isChildrenVisible } from "../domain/traversal";
 export class ItemView {
   el: HTMLElement;
   row: HTMLElement;
+  text: HTMLElement;
   children?: HTMLElement;
 
   constructor(
@@ -13,15 +14,13 @@ export class ItemView {
     private onView: Action<ItemView>,
     private level: number = 0
   ) {
+    this.text = dom.div({ className: "item-rowText", textContent: item.title });
     this.row = dom.div(
       {
         className: "item-row",
         classMap: { "item-row-focused-child": level === 1 },
       },
-      [
-        dom.span({ className: "item-circle" }),
-        dom.span({ textContent: item.title }),
-      ]
+      [dom.span({ className: "item-circle" }), this.text]
     );
     this.children = this.viewChildren();
     this.el = isRoot(item)
@@ -66,6 +65,45 @@ export class ItemView {
   unhighlightChildren = () =>
     this.shouldBeHighlighted(this.children) &&
     dom.removeClass(this.children, "item-children-highlighted");
+
+  startRenaming = () => {
+    const text = this.text;
+
+    text.setAttribute("contenteditable", "");
+    text.addEventListener("blur", this.onBlur);
+    text.addEventListener("keydown", this.onKeyDown);
+    text.focus();
+
+    var range = document.createRange();
+    var sel = window.getSelection();
+
+    if (sel) {
+      range.setStart(text, 0);
+      range.collapse(true);
+
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  };
+
+  private endRename = () => {
+    this.text.removeAttribute("contenteditable");
+    this.text.removeEventListener("blur", this.onBlur);
+    this.text.removeEventListener("keydown", this.onKeyDown);
+    //TODO: will need to notify store to update other parts of UI
+    this.item.title = this.text.textContent || "";
+  };
+
+  private onKeyDown = (e: KeyboardEvent) => {
+    //to avoid selection change
+    e.stopPropagation();
+
+    if (e.code === "Enter" || e.code === "Escape") {
+      this.endRename();
+    }
+  };
+
+  private onBlur = () => this.endRename();
 
   private viewChildren() {
     if (isChildrenVisible(this.item))
@@ -125,4 +163,8 @@ style.class("item-row", {
 
 style.class("item-row-focused-child", {
   fontSize: fontSizes.big,
+});
+
+style.class("item-rowText", {
+  outline: "none",
 });

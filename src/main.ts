@@ -7,7 +7,11 @@ import { Store } from "./domain/Store";
 
 const root: Item = createItem("Home", [
   createItem("Music"),
-  createItem("Software Development"),
+  createItem("Software Development", [
+    createItem("Front-End", randomItems(3)),
+    createItem("Back-End", randomItems(2)),
+    createItem("Tumpa Mandal", randomItems(2)),
+  ]),
   createItem("People", randomItems(12)),
   createItem("Channels", [
     createItem(
