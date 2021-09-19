@@ -11,6 +11,4 @@ const root: Item = createRoot("Home", [
   createItem("Channels", randomItems(5)),
 ]);
 
-//@ts-expect-error
-global.root = root;
 document.body.appendChild(viewTree(root));

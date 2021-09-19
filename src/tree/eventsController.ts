@@ -1,8 +1,14 @@
 import * as traversal from "../itemsTree/traversal";
-import { ItemView } from "./itemView";
+
+export type ItemViewEvents = {
+  close(): void;
+  open(): void;
+  select(): void;
+  unselect(): void;
+};
 
 export const listenToKeyboardEvents = (
-  map: WeakMap<Item, ItemView>,
+  map: WeakMap<Item, ItemViewEvents>,
   root: Item
 ) => {
   let selectedItem = root;
@@ -14,34 +20,30 @@ export const listenToKeyboardEvents = (
     map.get(selectedItem)?.select();
   };
 
-  const updateIndexes = (selectedItem: Item) => {
-    traversal.forEachItemBelow(selectedItem, (item) => {
-      map.get(item)?.updatePositionInTree();
-    });
-  };
-
   document.addEventListener("keydown", (e) => {
     if (e.code === "ArrowDown") {
+      e.preventDefault();
       const itemBelow = traversal.getItemBelow(selectedItem);
       if (itemBelow) selectItem(itemBelow);
     }
     if (e.code === "ArrowUp") {
+      e.preventDefault();
       const itemAbove = traversal.getItemAbove(selectedItem);
       if (itemAbove) selectItem(itemAbove);
     }
     if (e.code === "ArrowLeft") {
+      e.preventDefault();
       if (selectedItem.isOpen) {
         selectedItem.isOpen = false;
-        updateIndexes(selectedItem);
         map.get(selectedItem)?.close();
       } else if (selectedItem.parent) {
         selectItem(selectedItem.parent);
       }
     }
     if (e.code === "ArrowRight") {
+      e.preventDefault();
       if (!selectedItem.isOpen) {
         selectedItem.isOpen = true;
-        updateIndexes(selectedItem);
         map.get(selectedItem)?.open();
       } else if (selectedItem.children.length > 0) {
         selectItem(selectedItem.children[0]);
