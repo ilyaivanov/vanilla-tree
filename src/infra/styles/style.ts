@@ -15,4 +15,27 @@ const writeToStyles = (selector: string, styles: Styles) => {
 export const style = {
   class: (className: string, styles: Styles) =>
     writeToStyles(`.${className}`, styles),
+  tag: (tag: keyof HTMLElementTagNameMap, styles: Styles) =>
+    writeToStyles(`${tag}`, styles),
 };
+
+export const css = {
+  createScrollStyles: (
+    className: string,
+    props: {
+      scrollbar: Styles;
+      thumb: Styles;
+    }
+  ) => {
+    writeToStyles(`.${className}::-webkit-scrollbar`, props.scrollbar);
+    writeToStyles(`.${className}::-webkit-scrollbar-thumb`, props.thumb);
+  },
+
+  padding: padding,
+};
+
+function padding(all: number): string;
+function padding(vertical: number, horizontal: number): string;
+function padding(vertical: number, horizontal?: number): string {
+  return horizontal ? `${vertical}px ${horizontal}px` : `${vertical}px`;
+}

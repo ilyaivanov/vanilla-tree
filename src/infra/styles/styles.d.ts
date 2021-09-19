@@ -9,13 +9,14 @@ type Styles = Partial<{
   maxHeight: number;
   width: number | string;
   minWidth: number;
+  maxWidth: number | string;
   minHeight: number;
   boxSizing: "border-box";
 
   //margins and paddings
   margin: number | string;
   marginRight: number | "-100%" | "auto";
-  marginLeft: number | "auto";
+  marginLeft: number | "auto" | string;
   marginTop: number;
   marginBottom: number;
   padding: number | string;

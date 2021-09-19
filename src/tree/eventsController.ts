@@ -5,20 +5,25 @@ export type ItemViewEvents = {
   open(): void;
   select(): void;
   unselect(): void;
+  highlightChildren(): void;
+  unhighlightChildren(): void;
 };
 
 export const listenToKeyboardEvents = (
   map: WeakMap<Item, ItemViewEvents>,
   root: Item
 ) => {
-  let selectedItem = root;
-  map.get(root)?.select();
+  let selectedItem = root.children[0];
 
   const selectItem = (item: Item) => {
     map.get(selectedItem)?.unselect();
+    map.get(selectedItem.parent!)?.unhighlightChildren();
     selectedItem = item;
     map.get(selectedItem)?.select();
+    map.get(selectedItem.parent!)?.highlightChildren();
   };
+
+  selectItem(selectedItem);
 
   document.addEventListener("keydown", (e) => {
     if (e.code === "ArrowDown") {
