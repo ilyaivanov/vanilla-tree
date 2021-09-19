@@ -38,6 +38,33 @@ it("traversing a tree", () => {
   expect(store.selectedItem.title).toEqual("Child 1");
 });
 
+it("removing selected item removes it and selects item above", () => {
+  const root = createItem("Home", [
+    createItem("Child 1", [createItem("Child 1_1")]),
+    createItem("Child 2"),
+  ]);
+
+  const store = new Store(root);
+  store.selectItem(root.children[0].children[0]);
+
+  store.removeSelected();
+
+  expect(root.children[0].children).toHaveLength(0);
+  expect(store.selectedItem).toBe(root.children[0]);
+});
+
+it("removing first item selects next one", () => {
+  const root = createItem("Home", [
+    createItem("Child 1", [createItem("Child 1_1")]),
+    createItem("Child 2"),
+  ]);
+
+  const store = new Store(root);
+  store.removeSelected();
+  expect(root.children).toHaveLength(1);
+  expect(store.selectedItem.title).toBe("Child 2");
+});
+
 it("store events", () => {
   const root = createItem("Home", [
     createItem("Child 1"),
@@ -47,17 +74,17 @@ it("store events", () => {
   const store = new Store(root);
 
   const closeCb = jest.fn();
-  store.onItemClosed(closeCb);
+  store.on("close", closeCb);
   store.closeItem(root.children[0]);
   expect(closeCb).toHaveBeenCalledWith(root.children[0]);
 
   const openCb = jest.fn();
-  store.onItemOpened(openCb);
+  store.on("open", openCb);
   store.openItem(root.children[0]);
   expect(openCb).toHaveBeenCalledWith(root.children[0]);
 
   const cb = jest.fn();
-  store.onSelectionChanged(cb);
+  store.on("selectionChanged", cb);
   store.moveSelectionDown();
   expect(store.selectedItem.title).toEqual("Child 2");
 
@@ -65,6 +92,6 @@ it("store events", () => {
   const currentSelected = root.children[1];
   expect(cb).toHaveBeenCalledWith(previousItem, currentSelected);
 
-  store.offSelectionChanged(cb);
+  store.off("selectionChanged", cb);
   store.moveSelectionUp();
 });

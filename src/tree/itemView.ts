@@ -35,6 +35,10 @@ export class ItemView {
     this.children = undefined;
   }
 
+  remove() {
+    this.el.remove();
+  }
+
   open() {
     this.children = this.viewChildren();
     if (this.children) dom.appendChild(this.el, this.children);

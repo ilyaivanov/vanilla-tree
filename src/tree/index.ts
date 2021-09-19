@@ -19,13 +19,18 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
     map.get(currentItem.parent!)?.highlightChildren();
   };
 
-  store.onSelectionChanged(selectItem);
-  store.onItemClosed((item) => map.get(item)?.close());
-  store.onItemOpened((item) => map.get(item)?.open());
+  store.on("selectionChanged", selectItem);
+  store.on("close", (item) => map.get(item)?.close());
+  store.on("open", (item) => map.get(item)?.open());
+  store.on("removed", (item) => map.get(item)?.remove());
 
   selectItem(undefined, store.selectedItem);
 
   document.addEventListener("keydown", (e) => {
+    if (e.code === "Backspace" && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      store.removeSelected();
+    }
     if (e.code === "ArrowDown") {
       e.preventDefault();
       store.moveSelectionDown();

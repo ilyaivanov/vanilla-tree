@@ -1,4 +1,5 @@
-import { Events } from "./core";
+import { removeItem } from "./core";
+import { Events } from "./events";
 import { getItemBelow, getItemAbove, getFirstChild, isRoot } from "./traversal";
 
 export class Store {
@@ -21,6 +22,16 @@ export class Store {
 
   selectItem = (item: Item) => this.changeSelection(item);
 
+  removeSelected = () => {
+    const itemSelected = this.selectedItem;
+    const itemAbove = getItemAbove(itemSelected);
+    removeItem(itemSelected);
+    this.changeSelection(
+      !itemAbove || isRoot(itemAbove) ? this.root.children[0] : itemAbove
+    );
+    this.events.trigger("removed", itemSelected);
+  };
+
   openItem(item: Item) {
     item.isOpen = true;
     this.events.trigger("open", item);
@@ -31,17 +42,9 @@ export class Store {
     this.events.trigger("close", item);
   }
 
-  events = new Events<ItemEvents>();
-  onItemClosed = (cb: Action<Item>) => this.events.on("close", cb);
-
-  onItemOpened = (cb: Action<Item>) => this.events.on("open", cb);
-
-  onSelectionChanged = (cb: Action2<Item, Item>) =>
-    this.events.on("selectionChanged", cb);
-
-  offSelectionChanged(cb: Action2<Item, Item>) {
-    this.events.off("selectionChanged", cb);
-  }
+  private events = new Events<ItemEvents>();
+  on = this.events.on;
+  off = this.events.off;
 
   private changeSelection(newItemSelected: Item | undefined) {
     if (newItemSelected && !isRoot(newItemSelected)) {
@@ -57,7 +60,8 @@ export class Store {
 }
 
 type ItemEvents = {
-  close: (prev: Item) => void;
-  open: (prev: Item) => void;
+  close: Action<Item>;
+  open: Action<Item>;
+  removed: Action<Item>;
   selectionChanged: (prev: Item, next: Item) => void;
 };
