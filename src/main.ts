@@ -1,8 +1,9 @@
 import { viewTree } from "./tree";
-import { createItem, randomItems } from "./itemsTree";
+import { createItem, randomItems } from "./domain/create";
 import { css, style } from "./browser/styles/style";
 import { dom } from "./browser";
 import { colors, fontSizes, spacings } from "./designSystem";
+import { Store } from "./domain/Store";
 
 const root: Item = createItem("Home", [
   createItem("Music", randomItems(10)),
@@ -15,9 +16,11 @@ const root: Item = createItem("Home", [
   createItem("Channels", randomItems(5)),
 ]);
 
+const store = new Store(root);
+
 document.body.appendChild(
   dom.div({ className: "app" }, [
-    dom.div({ className: "tree-container" }, [viewTree(root)]),
+    dom.div({ className: "tree-container" }, [viewTree(store)]),
   ])
 );
 

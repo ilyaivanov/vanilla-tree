@@ -1,6 +1,5 @@
-import { createItem } from "../itemsTree";
-import { getItemAbove, getItemBelow } from "../itemsTree/traversal";
-import { foo } from "./core";
+import { createItem } from "./create";
+import { getItemAbove, getItemBelow } from "./traversal";
 
 describe("Having one root with two children", () => {
   let root: Item;
