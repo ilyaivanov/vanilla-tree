@@ -1,10 +1,10 @@
 import { viewTree } from "./tree";
-import { createItem, createRoot, randomItems } from "./itemsTree";
+import { createItem, randomItems } from "./itemsTree";
 import { css, style } from "./browser/styles/style";
 import { dom } from "./browser";
 import { colors, fontSizes, spacings } from "./designSystem";
 
-const root: Item = createRoot("Home", [
+const root: Item = createItem("Home", [
   createItem("Music", randomItems(10)),
   createItem("Software Development", [
     createItem("Front-End", randomItems(3)),
@@ -40,8 +40,8 @@ style.tag("body", {
   fontFamily: `Roboto, Arial, sans-serif`,
   margin: 0,
   fontSize: fontSizes.regular,
-  backgroundColor: `#1e1e1e`,
-  color: `white`,
+  backgroundColor: colors.appBackground,
+  color: colors.text,
 });
 
 css.createScrollStyles("app", {

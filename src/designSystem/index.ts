@@ -11,15 +11,16 @@ export const spacings = {
 };
 
 export const colors = {
-  appBackground: "",
-  text: "",
-  selectionBackground: "",
-  childrenBorder: "",
-  childrenBorderHighlighted: "",
+  appBackground: "#1e1e1e",
+  text: "white",
+  circle: "white",
+  selectionBackground: "#27292A",
+  childrenBorder: "#4C5155",
+  childrenBorderHighlighted: "#808080",
   scrollbar: "#424242",
 };
 
 export const fontSizes = {
   regular: 13,
-  big: 15,
+  big: 16,
 };

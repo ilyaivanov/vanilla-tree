@@ -1,4 +1,4 @@
-import { fontSizes, spacings } from "../designSystem";
+import { colors, fontSizes, spacings } from "../designSystem";
 import { dom } from "../browser";
 import { style } from "../browser/styles/style";
 import { isRoot } from "../itemsTree/traversal";
@@ -77,25 +77,25 @@ class ItemView implements ItemViewEvents {
 const marginLeft = spacings.circleSize / 2 - spacings.borderWidth / 2;
 
 style.class("item-selected", {
-  backgroundColor: "#27292A",
+  backgroundColor: colors.selectionBackground,
 });
 
 style.class("item-children", {
   marginLeft: marginLeft,
   paddingLeft: spacings.xStep - marginLeft,
-  borderLeft: `${spacings.borderWidth}px solid #4C5155`,
+  borderLeft: `${spacings.borderWidth}px solid ${colors.childrenBorder}`,
   transition: "border-left 200ms",
 });
 
 style.class("item-children-highlighted", {
-  borderLeft: `${spacings.borderWidth}px solid #808080`,
+  borderLeft: `${spacings.borderWidth}px solid ${colors.childrenBorderHighlighted}`,
 });
 
 style.class("item-circle", {
   width: spacings.circleSize,
   height: spacings.circleSize,
   borderRadius: spacings.circleSize / 2,
-  backgroundColor: "white",
+  backgroundColor: colors.circle,
   display: "inline-block",
   marginRight: spacings.distanceBetweenTextAndCircle,
 });

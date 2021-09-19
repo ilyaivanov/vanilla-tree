@@ -34,7 +34,7 @@ export const listenToKeyboardEvents = (
     if (e.code === "ArrowUp") {
       e.preventDefault();
       const itemAbove = traversal.getItemAbove(selectedItem);
-      if (itemAbove) selectItem(itemAbove);
+      if (itemAbove && !traversal.isRoot(itemAbove)) selectItem(itemAbove);
     }
     if (e.code === "ArrowLeft") {
       e.preventDefault();

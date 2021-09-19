@@ -11,11 +11,5 @@ export const createItem = (title: string, children: Item[] = []): Item => {
   return item;
 };
 
-export const createRoot = (title: string, children: Item[]): Item => {
-  const result = createItem(title, children);
-
-  return result;
-};
-
 export const randomItems = (count: number): Item[] =>
   Array.from(new Array(count)).map((_, i) => createItem(randomName(i + 1)));
