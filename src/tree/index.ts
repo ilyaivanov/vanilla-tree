@@ -50,21 +50,21 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
     }
     if (e.code === "ArrowDown") {
       e.preventDefault();
-      store.moveSelectionDown();
+      store.selectItemBelow();
     }
     if (e.code === "ArrowUp") {
       e.preventDefault();
-      store.moveSelectionUp();
+      store.selectItemAbove();
     }
     if (e.code === "ArrowLeft") {
       e.preventDefault();
       if (store.selectedItem.isOpen) store.closeItem(store.selectedItem);
-      else store.moveSelectionToParent();
+      else store.selectParent();
     }
     if (e.code === "ArrowRight") {
       e.preventDefault();
       if (!store.selectedItem.isOpen) store.openItem(store.selectedItem);
-      else store.moveSelectionToFirstChild();
+      else store.selectChild();
     }
   });
 };

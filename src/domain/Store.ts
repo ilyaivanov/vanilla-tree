@@ -9,15 +9,13 @@ export class Store {
     this.selectedItem = root.children[0];
   }
 
-  moveSelectionDown = () =>
-    this.changeSelection(getItemBelow(this.selectedItem));
+  selectItemBelow = () => this.changeSelection(getItemBelow(this.selectedItem));
 
-  moveSelectionUp = () => this.changeSelection(getItemAbove(this.selectedItem));
+  selectItemAbove = () => this.changeSelection(getItemAbove(this.selectedItem));
 
-  moveSelectionToParent = () => this.changeSelection(this.selectedItem.parent);
+  selectParent = () => this.changeSelection(this.selectedItem.parent);
 
-  moveSelectionToFirstChild = () =>
-    this.changeSelection(getFirstChild(this.selectedItem));
+  selectChild = () => this.changeSelection(getFirstChild(this.selectedItem));
 
   selectFirstChild = () => this.changeSelection(this.selectedItem.parent);
 

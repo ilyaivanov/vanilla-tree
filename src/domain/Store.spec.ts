@@ -10,31 +10,31 @@ it("traversing a tree", () => {
   const store = new Store(root);
   expect(store.selectedItem.title).toEqual("Child 1");
 
-  store.moveSelectionDown();
+  store.selectItemBelow();
   expect(store.selectedItem.title).toEqual("Child 1_1");
 
-  store.moveSelectionDown();
+  store.selectItemBelow();
   expect(store.selectedItem.title).toEqual("Child 2");
 
-  store.moveSelectionDown();
+  store.selectItemBelow();
   expect(store.selectedItem.title).toEqual("Child 2");
 
-  store.moveSelectionUp();
+  store.selectItemAbove();
   expect(store.selectedItem.title).toEqual("Child 1_1");
 
-  store.moveSelectionUp();
+  store.selectItemAbove();
   expect(store.selectedItem.title).toEqual("Child 1");
 
-  store.moveSelectionUp();
+  store.selectItemAbove();
   expect(store.selectedItem.title).toEqual("Child 1");
 
-  store.moveSelectionToFirstChild();
+  store.selectChild();
   expect(store.selectedItem.title).toEqual("Child 1_1");
 
-  store.moveSelectionToParent();
+  store.selectParent();
   expect(store.selectedItem.title).toEqual("Child 1");
 
-  store.moveSelectionToParent();
+  store.selectParent();
   expect(store.selectedItem.title).toEqual("Child 1");
 });
 
@@ -85,7 +85,7 @@ it("store events", () => {
 
   const cb = jest.fn();
   store.on("selectionChanged", cb);
-  store.moveSelectionDown();
+  store.selectItemBelow();
   expect(store.selectedItem.title).toEqual("Child 2");
 
   const previousItem = root.children[0];
@@ -93,5 +93,5 @@ it("store events", () => {
   expect(cb).toHaveBeenCalledWith(previousItem, currentSelected);
 
   store.off("selectionChanged", cb);
-  store.moveSelectionUp();
+  store.selectItemAbove();
 });
