@@ -1,4 +1,4 @@
-import { removeItem } from "./core";
+import { insertAt, removeItem } from "./core";
 import { createItem } from "./create";
 import { Events } from "./events";
 import { getItemBelow, getItemAbove, getFirstChild, isRoot } from "./traversal";
@@ -26,27 +26,25 @@ export class Store {
   removeSelected = () => {
     const itemSelected = this.selectedItem;
     const itemAbove = getItemAbove(itemSelected);
-    removeItem(itemSelected);
+    this.mutations.removeItem(itemSelected);
     this.changeSelection(
       !itemAbove || isRoot(itemAbove) ? this.root.children[0] : itemAbove
     );
-    this.events.trigger("removed", itemSelected);
   };
 
   createItemAfterSelection = () => {
     const itemSelected = this.selectedItem;
     const parent = itemSelected.parent;
     if (parent) {
+      const newItem = createItem("");
       const index = parent.children.indexOf(itemSelected);
-      const newItem = createItem("Hello World");
-      newItem.parent = parent;
-      parent.children.splice(index + 1, 0, newItem);
-      this.events.trigger("added", newItem);
+      this.mutations.addItemAt(parent, newItem, index);
       this.changeSelection(newItem);
+      this.startRenamingSelected();
     }
   };
 
-  startRenaming = () => {
+  startRenamingSelected = () => {
     this.events.trigger("startRenaming", this.selectedItem);
   };
 
@@ -59,6 +57,17 @@ export class Store {
     item.isOpen = false;
     this.events.trigger("close", item);
   }
+
+  mutations = {
+    addItemAt: (parent: Item, newItem: Item, index: number) => {
+      insertAt(parent, newItem, index);
+      this.events.trigger("added", newItem);
+    },
+    removeItem: (item: Item) => {
+      removeItem(item);
+      this.events.trigger("removed", item);
+    },
+  };
 
   private events = new Events<ItemEvents>();
   on = this.events.on;

@@ -38,7 +38,7 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
   document.addEventListener("keydown", (e) => {
     if (e.code === "KeyE") {
       e.preventDefault();
-      store.startRenaming();
+      store.startRenamingSelected();
     }
     if (e.code === "Backspace" && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
