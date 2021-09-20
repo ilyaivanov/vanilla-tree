@@ -1,25 +1,25 @@
-import { Store } from "../domain/Store";
 import { ItemView } from "./itemView";
+import { store } from "./store";
 
-export const viewTree = (store: Store): Element => {
+export const viewTree = (): Element => {
   const map = new WeakMap<Item, ItemView>();
 
   requestAnimationFrame(() => {
-    listenToKeyboardEvents(map, store);
+    listenToKeyboardEvents(map);
   });
   return new ItemView(store.root, (view) => map.set(view.item, view)).el;
 };
 
-const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
-  const selectItem = (prevItem: Item | undefined, currentItem: Item) => {
-    map.get(prevItem!)?.unselect();
-    map.get(prevItem?.parent!)?.unhighlightChildren();
+const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>) => {
+  const selectionChanged = (prevItem: Item, currentItem: Item) => {
+    map.get(prevItem)?.unselect();
+    map.get(prevItem.parent!)?.unhighlightChildren();
 
     map.get(currentItem)?.select();
     map.get(currentItem.parent!)?.highlightChildren();
   };
 
-  store.on("selectionChanged", selectItem);
+  store.on("selectionChanged", selectionChanged);
   store.on("close", (item) => map.get(item)?.close());
   store.on("open", (item) => map.get(item)?.open());
   store.on("removed", (item) => map.get(item)?.remove());
@@ -33,35 +33,33 @@ const listenToKeyboardEvents = (map: WeakMap<Item, ItemView>, store: Store) => {
     }
   });
 
-  selectItem(undefined, store.selectedItem);
-
   document.addEventListener("keydown", (e) => {
     if (e.code === "KeyE") {
       e.preventDefault();
       store.startRenamingSelected();
-    }
-    if (e.code === "Backspace" && e.ctrlKey && e.shiftKey) {
+    } else if (e.code === "Backspace" && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
       store.removeSelected();
-    }
-    if (e.code === "Enter") {
+    } else if (e.code === "Enter") {
       e.preventDefault();
       store.createItemAfterSelection();
-    }
-    if (e.code === "ArrowDown") {
+    } else if (e.code === "ArrowDown" && e.shiftKey && e.altKey) {
+      e.preventDefault();
+      store.moveSelectedItemBelow();
+    } else if (e.code === "ArrowUp" && e.shiftKey && e.altKey) {
+      e.preventDefault();
+      store.moveSelectedItemAbove();
+    } else if (e.code === "ArrowDown") {
       e.preventDefault();
       store.selectItemBelow();
-    }
-    if (e.code === "ArrowUp") {
+    } else if (e.code === "ArrowUp") {
       e.preventDefault();
       store.selectItemAbove();
-    }
-    if (e.code === "ArrowLeft") {
+    } else if (e.code === "ArrowLeft") {
       e.preventDefault();
       if (store.selectedItem.isOpen) store.closeItem(store.selectedItem);
       else store.selectParent();
-    }
-    if (e.code === "ArrowRight") {
+    } else if (e.code === "ArrowRight") {
       e.preventDefault();
       if (!store.selectedItem.isOpen) store.openItem(store.selectedItem);
       else store.selectChild();

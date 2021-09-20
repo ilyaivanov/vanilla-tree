@@ -2,6 +2,7 @@ import { colors, fontSizes, spacings } from "../designSystem";
 import { dom } from "../browser";
 import { style } from "../browser/styles/style";
 import { isRoot, isChildrenVisible } from "../domain/traversal";
+import { store } from "./store";
 
 export class ItemView {
   el: HTMLElement;
@@ -26,6 +27,8 @@ export class ItemView {
     this.el = isRoot(item)
       ? this.children!
       : dom.div({}, [this.row, this.children]);
+
+    if (item === store.selectedItem) this.select();
     onView(this);
   }
 
@@ -42,7 +45,7 @@ export class ItemView {
     if (this.children) {
       const el = new ItemView(item, this.onView, this.level + 1).el;
       if (index === 0) {
-        this.children.appendChild(el);
+        this.children.insertAdjacentElement("afterbegin", el);
       } else {
         this.children.children[index - 1].insertAdjacentElement("afterend", el);
       }

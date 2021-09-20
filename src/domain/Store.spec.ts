@@ -95,3 +95,41 @@ it("store events", () => {
   store.off("selectionChanged", cb);
   store.selectItemAbove();
 });
+
+it("moving selected item below swaps it with item below", () => {
+  const root = createItem("Home", [createItem("1"), createItem("2")]);
+
+  const store = new Store(root);
+  store.moveSelectedItemBelow();
+
+  expect(root.children.map((i) => i.title)).toEqual(["2", "1"]);
+});
+
+it("moving selected item below when it is last does nothing", () => {
+  const root = createItem("Home", [createItem("1"), createItem("2")]);
+
+  const store = new Store(root);
+  store.selectItem(root.children[1]);
+  store.moveSelectedItemBelow();
+
+  expect(root.children.map((i) => i.title)).toEqual(["1", "2"]);
+});
+
+it("moving selected item above swaps it with item above", () => {
+  const root = createItem("Home", [createItem("1"), createItem("2")]);
+
+  const store = new Store(root);
+  store.selectItem(root.children[1]);
+  store.moveSelectedItemAbove();
+
+  expect(root.children.map((i) => i.title)).toEqual(["2", "1"]);
+});
+
+it("moving selected item above when it is first item does nothing", () => {
+  const root = createItem("Home", [createItem("1"), createItem("2")]);
+
+  const store = new Store(root);
+  store.moveSelectedItemAbove();
+
+  expect(root.children.map((i) => i.title)).toEqual(["1", "2"]);
+});
